@@ -1,0 +1,5 @@
+{
+  "name": "helloworld",
+  "domains": ["helloworld.com"],
+  "main": "server.js"
+}

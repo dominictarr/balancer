@@ -18,7 +18,6 @@ it feels a bit messy here, and might want to gather different stats.
 
 that suggests next level...
 */
-
 function rport () {
   return Math.round(Math.random()*40000)+1000
 }
@@ -31,7 +30,8 @@ function run (opts) {
   m.stdout = es.through()
   m.stderr = es.through()
   m.keepAlive = opts.keepAlive !== false // defalt to true
-  m.env = u.merge({PORT: rport()}, process.env)
+  opts.port = opts.port || rport()
+  m.env = u.merge({PORT: opts.port}, process.env)
 
   function start () {
     console.error(process.execPath, [m.package.main || 'index.js'], {cwd: m.dir})

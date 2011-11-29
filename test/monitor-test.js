@@ -31,13 +31,11 @@ test('start child process', function (t) {
         {started: a._isValidDate()},
         {SIGINT: a._isValidDate()},
         {exit: a._isValidDate()}
-//        {started: a._isValidDate()},
       ])      
       t.end()
     })
   )
   setTimeout(function (){
-
     m.restart()
     console.error('restarted')
     setTimeout(function (){
