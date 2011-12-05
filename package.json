@@ -1,16 +1,25 @@
-{ "name": "frankenstien"
-, "version": "0.0.0"
-, "description": ""
-, "homepage": "http://github.com/dominictarr/frankenstien"
-, "repository": 
-  { "type": "git"
-  , "url": "https://github.com/dominictarr/frankenstien.git" }
-, "dependencies": {}
-, "devDependencies": {}
-, "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://bit.ly/dominictarr)"
-, "scripts": { 
-    "test": "meta-test test/*.js" 
-  , "start": "./run.sh start"
-  , "stop": "./run.sh stop"
-  } 
+{
+  "name": "frankenstien",
+  "version": "0.0.0",
+  "description": "",
+  "homepage": "http://github.com/dominictarr/frankenstien",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dominictarr/frankenstien.git"
+  },
+  "dependencies": {
+    "mw-pipes": "0",
+    "connect": "~1.8.2",
+    "dirty": "~0.9.5",
+    "ubelt": "~3.0.0",
+    "event-stream": "~0.6.0",
+    "config-chain": "~0.1.0"
+  },
+  "devDependencies": {},
+  "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://bit.ly/dominictarr)",
+  "scripts": {
+    "test": "meta-test test/*.js",
+    "start": "./run.sh start",
+    "stop": "./run.sh stop"
+  }
 }
