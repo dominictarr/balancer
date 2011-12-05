@@ -60,8 +60,7 @@ setup () {
   ln -s $OLD/start.sh S99balancer
   cd $OLD
   git config --add receive.denyCurrentBranch ignore
-  printf '#!/usr/bin/env bash \n git reset --hard HEAD\n../start.sh restart' > .git/hooks/post-receive
-  chmod +x .git/hooks/post-receive
+  cp post-recieve > .git/hooks/post-receive
 } 
 
 restart () {
