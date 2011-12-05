@@ -1,3 +1,4 @@
 #!/usr/bin/env bash 
 git reset --hard HEAD
-../start.sh restart
+cd $BASH_SOURCE
+./start.sh restart
