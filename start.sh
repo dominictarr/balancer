@@ -64,4 +64,9 @@ setup () {
   chmod +x .git/hooks/post-receive
 } 
 
+restart () {
+  stop
+  start
+}
+
 "$@" ##run start or stop
