@@ -4,11 +4,18 @@ mini platform for continous deployment with split testing.
 
 ##TODO
 
-  * figure out cookies
-  * support branches.
-  * refactor out _admin api.
+  * figure out cookies -- DONE
+  * support branches.  -- DONE
+  * refactor out _admin api. --DONE
   * stats aggregation.
-  
+  * minimal persistance.  -- DONE
+
+## persistance.
+
+if the proxy crashes, it must restart without losing it's state.
+what must it remember?
+
+  * which apps are running... restart the apps as if they had been just updated.
   
 ## stats
 

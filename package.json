@@ -8,4 +8,9 @@
 , "dependencies": {}
 , "devDependencies": {}
 , "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://bit.ly/dominictarr)"
-, "scripts": { "test": "meta-test test/*.js" } }
+, "scripts": { 
+    "test": "meta-test test/*.js" 
+  , "start": "./run.sh start"
+  , "stop": "./run.sh stop"
+  } 
+}

@@ -19,7 +19,7 @@ module.exports = function (model) {
         branch: req.cookies.branch,
         testid: req.cookies.testid
       })
-      
+      if(!inst) return next({error:'not_found', message: 'no app', host: req.headers.host})
       req.proxyDest = {
         host: 'localhost',
         port: inst.port
@@ -36,7 +36,7 @@ module.exports = function (model) {
     },
     createProxy(function (req) {
       //I don't really like this way connect puts every thing into
-      //the bag of the request context.
+        //the bag of the request context.
       //could nicen this by respecting some RFC about forward proxy headers?
       return req.proxyDest
     })  

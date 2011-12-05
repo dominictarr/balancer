@@ -31,7 +31,7 @@ var u = require('ubelt')
   , join = require('path').join
 
 module.exports = 
-function () {
+function (emitter) {
 
   var instances = []
     , apps = {}
@@ -64,22 +64,38 @@ function () {
   model.filter = matcher(instances, u.filter)
 //  model.findApp = matcher(apps, u.find)
 
-  model.createAppInfo =
+  model.createApp = 
+    function (app) {
+      app = apps[app.name] = {
+          name: app.name,
+          type: 'app',
+          testid: app.testid || Math.random(), //updating the test id will randomly reassign users to branches.
+          instances: app.instances || []
+      }
+      app.__defineGetter__('branches', function () {
+        u.map(this.instances, function (v) { return v.branch })        
+      })
+      return app
+    }
+
+  model.updateApp =
     function (inst) {
       var name = inst.package.name
       if(apps[name]) {
         apps[name].instances.push(inst)
       } else {
-        var info = apps[name] = {
+        var info = model.createApp({
           name: name,
-          testid: Math.random(), //updating the test id will randomly reassign users to branches.
           instances: [inst]
-        }
-        info.__defineGetter__('branches', function () {
-          u.map(this.instances, function (v) { return v.branch })        
         })
+        //need to persist the testid's
+        emitter.emit('app', info)
       }
     }
+    model.setTestid = 
+      function (name, testid) {
+        apps[name].testid = testid    
+      }
 
   model.getTestApp = 
     function (opts) {
@@ -97,16 +113,15 @@ function () {
         inst = model.find({
           domains: selectDomain
         })
+        if(!inst) return //okay... something messy is happening here...
         var app = inst.app
         var r = {
           branch: u.randomOf(app.instances.map(function (v) {
-            console.error(v.branch)
             return v.branch
           }))
         , testid: app.testid //set to the current testid
         , domains: selectDomain
         }
-        console.error(r)
         inst = model.find(r)
         console.error(inst)
       }
@@ -115,30 +130,32 @@ function () {
 
   model.create =
     function create (dir, data) {
-      var app = {
+      var inst = {
+        type: 'instance',
         dir: dir,
         branch: dir.split('/').pop(),
         package: data,
         domains: data.domains || [],
         port: u.randomInt(1000, 50000)
       }
-      app.__defineGetter__('testid', function () {
+      inst.__defineGetter__('testid', function () {
         return apps[this.package.name].testid
       })
-      app.__defineGetter__('app', function () {
+      inst.__defineGetter__('app', function () {
         return apps[this.package.name]
       })
-
-      //XXX validate app XXX
-      app.monitor = runner(app)
-      model.createAppInfo(app)
-      return app
+  
+      //XXX validate instance XXX
+      inst.monitor = runner(inst)
+      model.updateApp(inst)
+      emitter.emit('instance', inst)
+      return inst
     }
   
 
   model.update = 
     function update(p, cb) {
-      var dir = join(process.env.HOME, p)
+      var dir = p.indexOf(process.env.HOME) == 0 ? p : join(process.env.HOME, p)
       util.readJSON(dir+'/package.json', function (err, package) {
         if(err) return cb(err)
         var app = model.find({dir: p})
@@ -158,10 +175,11 @@ function () {
   model.info = 
     function info(app) {
       return {
-        dir: app.dir,
-        port: app.port,
-        branch: app.branch,
-        package: app.package          
+        dir: app.dir
+      , port: app.port
+      , branch: app.branch  
+      , package: app.package
+      , type: app.type
       }  
     }
 
