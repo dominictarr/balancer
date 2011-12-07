@@ -24,12 +24,20 @@
 echo $PWD
 #cd "$BASH_SOURCE"
 cont () {
-  while test -e pid; do 
+  dif=2
+  while test -e pid && [ $dif -ge 2 ]; do 
     echo starting balancer... `date`
+    start=`date +%s`
     node ./index "$@"  >> ~/logs/balancer.out.log 2>> ~/logs/balancer.err.log
+    stop=`date +%s`
+    dif=$(($stop - $start))
+    #echo $start - $stop = $dif
+    tail ~/logs/balancer.err.log
     sleep 1 # if it crashed, spin slowly, so don't hog CPU
     # would be better to detect spinning...
   done
+  [ $dif -lt 2 ] && echo exited in $dif seconds >&2
+  rm -f pid 
   echo balancer exited `date` >> ~/logs/balancer.out.log 
 }
 
@@ -60,7 +68,8 @@ setup () {
   ln -s $OLD/start.sh S99balancer
   cd $OLD
   git config --add receive.denyCurrentBranch ignore
-  cp post-recieve > .git/hooks/post-receive
+  cd .git/hooks
+  ln -s post-receive $OLD
 } 
 
 restart () {

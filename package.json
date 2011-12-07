@@ -12,7 +12,7 @@
     "connect": "~1.8.2",
     "dirty": "~0.9.5",
     "ubelt": "~3.0.0",
-    "event-stream": "~0.6.0",
+    "event-stream": "~0.7.0",
     "config-chain": "~0.1.0"
   },
   "devDependencies": {},
