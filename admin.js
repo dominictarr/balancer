@@ -38,7 +38,7 @@ return pipes(
     }),
     pre('/restart/', function (req, res, next) {
       var p = req.url
-      model.get({dir: p}).restart()
+      model.find({dir: p}).restart()
       //tail the output...
       util.send(res, model.info(data))
 
