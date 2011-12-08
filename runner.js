@@ -22,6 +22,15 @@ function rport () {
   return Math.round(Math.random()*40000)+1000
 }
 
+function info(m) {
+  return {
+    port: m.env.PORT,
+    dir: m.dir,
+    name: m.package.name,
+    pid: m.process.pid
+  }
+}
+
 module.exports =
 function run (opts) {
   var m = new EventEmitter()
@@ -36,32 +45,33 @@ function run (opts) {
   //XXX: this should reload the package when it restarts
   
   function start () {
-    console.error(process.execPath, [m.package.main || 'index.js'], {cwd: m.dir})
     m.process = cp.spawn(process.execPath, [m.package.main || 'index.js'], {cwd: m.dir, env: m.env})  
 
     m.process.stdout.pipe(m.stdout, {end: false})
     m.process.stderr.pipe(m.stderr, {end: false})
 
     var pid = m.process.pid
-    console.error('start', pid)
     m.process.on('exit', function () {
-      console.error('exit', pid)
       if(m.keepAlive) 
         start()
       else{
         m.stdout.end()
         m.stderr.end()
       }
+      m.emit('exit', info(m))
     })
+    m.emit('start', info(m))
   }
   start()
 
   m.restart = function (sig) {
     m.process.kill(sig || 'SIGINT')
+    m.emit('restart', info(m))
   }
   m.stop = function (sig) {
     m.keepAlive = false
     m.process.kill(sig || 'SIGINT')
+    m.emit('stop', info(m))
   }
   return m
 }

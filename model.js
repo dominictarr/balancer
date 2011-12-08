@@ -123,7 +123,6 @@ function (emitter) {
         , domains: selectDomain
         }
         inst = model.find(r)
-        console.error(inst)
       }
       return inst
     }
@@ -152,7 +151,7 @@ function (emitter) {
       //XXX validate instance XXX
       inst.monitor = runner(inst)
       model.updateApp(inst)
-      emitter.emit('instance', inst)
+      emitter.emit('instance', model.info(inst))
       return inst
     }
 

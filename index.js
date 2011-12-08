@@ -57,6 +57,7 @@ var createHandler = module.exports = function (db) { //inject memory database wh
 
   function save(k,v) {
     db.set(k, v, function logSave() {
+      emitter.emit ('saved', v)
     })
   }
 
@@ -78,11 +79,11 @@ var createHandler = module.exports = function (db) { //inject memory database wh
   })
   db.forEach(function (key, value) {
     if(value.type == 'instance'){
-      model.update(key, console.error)
+      model.update(key, function (){})
     }
   })
 
-  return pipes(
+  var handler = pipes(
       function (req, res, next) {
         emitter.emit('request', {method: req.method, url: req.url})
         next()
@@ -97,13 +98,17 @@ var createHandler = module.exports = function (db) { //inject memory database wh
     model: model,
     admin: admin,
     proxy: proxy,
-    emitter: emitter
+    emitter: emitter,
+    handler: handler,
   }
 }
 
 if(!module.parent)
   loadDB(config, function (err, db) {
-    http.createServer(createHandler(db)).listen(config.port, function () {
-      console.error('balancer listening on ' + config.port + ' in ' + config.env + ' enviroment')
+    var balancer = createHandler(db)
+    http.createServer(balancer.handler).listen(config.port, function () {
+      
+      balancer.emitter.emit('listening',
+        {app:'balancer', port: config.port, env: config.env })
     })
   })

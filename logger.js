@@ -1,3 +1,5 @@
+
+var trees = require('trees')
 /*
 make logging be a simple line seperated json format to ease integration tests.
 
@@ -32,13 +34,21 @@ function timestamp () {
 
 }
 
+function safestring(obj){
+  try {
+    return JSON.stringify(obj)
+  } catch (err) {
+    return trees.untangle.stringify(obj)
+  }
+}
+
 function stringify (event, data) {
   //XXX: guard against stringify throwing on circular objects
   if('string' !== typeof event)
-    event = JSON.stringify(event)
+    event = safestring(event)
   if(!data)
     data = {}
-  return JSON.stringify([event, data, timestamp()])
+  return safestring([event, data, timestamp()])
 }
 
 function log(event, data) {
@@ -61,5 +71,4 @@ exports.log = log
 exports.err = err
 exports.stringify = stringify
 exports.timestamp = timestamp
-
 exports.logEvents = logEvents
