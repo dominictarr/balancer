@@ -3,4 +3,4 @@
 echo starting balancer, on `hostname -i` - `date`
 
 npm install -d
-./start.sh restart
+nohup ./start.sh restart &
