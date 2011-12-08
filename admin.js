@@ -8,7 +8,7 @@ var pipes = require('mw-pipes')
 
 var pre = util.pre
 
-module.exports = function(model) {
+module.exports = function(model, emitter) {
 
 //retrives apps by path.
 //creates apps.
@@ -42,33 +42,12 @@ return pipes(
       //tail the output...
       util.send(res, model.info(data))
 
-/*      , function (err, data) {
-        if(err) return next(err)
-        util.send(res, model.info(data))
-      })*/
-      // if the app isn't running, start it.
-      // else, update it.
-      // restart this app if it is currently running.
     }),
     
-/*    pre('/enable/', function (req, res, next) {  
-      var p = req.url
-      model.getApp({dir: p})
-      if(!apps[p])
-        return send(res, {
-          error: 'not_found', 
-          path: p, 
-          message: 'no app at that path'
-        }, 404)
-      apps[p].enabled = true        
-    }),*/
     pre('/list', function (req, res, next) {
       util.send(res, model.list())
     }),
     //_restart
-    //_tail    -- log stats to stdout, newline seperated json.
-    //_tailerr -- log debug to stderr, just whatever.
-    //_stats
     pre('/tailerr/', getApp(function (app) {
       app.monitor.stderr.pipe(this.res, {end: false})
     })),

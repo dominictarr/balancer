@@ -40,22 +40,23 @@ function loadDB(config, cb) {
   }
 }
 
-var createHandler = module.exports = function (db) { //inject memory database.
+var createHandler = module.exports = function (db) { //inject memory database when testing
 
   var emitter = new EventEmitter()
     , model = require('./model')(emitter) //db does nothing so far
-    , admin = require('./admin')(model)
-    , proxy = require('./testing-proxy')(model)
+    , admin = require('./admin')(model, emitter)
+    , proxy = require('./testing-proxy')(model, emitter)
     , util = require('./util')
+    , logger = require('./logger')
     ;
-
+    
+  logger.logEvents(emitter)
 
   //hook up model to persistance
   //whenever a instance or app is updated, save it.
 
   function save(k,v) {
     db.set(k, v, function logSave() {
-      console.error('saved', k, v)
     })
   }
 
@@ -72,20 +73,18 @@ var createHandler = module.exports = function (db) { //inject memory database.
   //on load, recreate apps, and set testid
   db.forEach(function (key, value) {
     if(value.type == 'app') {
-      console.error(value)
       model.createApp(value)
     }
   })
   db.forEach(function (key, value) {
     if(value.type == 'instance'){
-          console.error(value)
       model.update(key, console.error)
     }
   })
 
   return pipes(
       function (req, res, next) {
-        console.error(req.method, req.url)
+        emitter.emit('request', {method: req.method, url: req.url})
         next()
       },
       connect.logger(),
@@ -93,6 +92,13 @@ var createHandler = module.exports = function (db) { //inject memory database.
       proxy,
       connect.errorHandler()
     )
+
+  return {
+    model: model,
+    admin: admin,
+    proxy: proxy,
+    emitter: emitter
+  }
 }
 
 if(!module.parent)
