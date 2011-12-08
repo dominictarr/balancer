@@ -21,24 +21,33 @@
 # this should be reliable and effective as long as it's used as intended.
 # --Dominic (5-12-2011)
 #
-echo $PWD
-#cd "$BASH_SOURCE"
 cont () {
+  mkdir -p ~/logs
   dif=2
+  restarts=0
+  echo $$ > pid
+
   while test -e pid && [ $dif -ge 2 ]; do 
-    echo starting balancer... `date`
+    let restarts="$restarts"+1
     start=`date +%s`
-    node ./index "$@"  >> ~/logs/balancer.out.log 2>> ~/logs/balancer.err.log
+    echo "starting balancer for $restarts time " `date` 
+
+    echo $$ > pid
+    #swap for npm start ? ... will be the only thing to couple to node
+    node ./index.js "$@"  >> ~/logs/balancer.out.log 2>> ~/logs/balancer.err.log
     stop=`date +%s`
     dif=$(($stop - $start))
-    #echo $start - $stop = $dif
+
+    # echo the stderr to show the 
     tail ~/logs/balancer.err.log
-    sleep 1 # if it crashed, spin slowly, so don't hog CPU
-    # would be better to detect spinning...
+
   done
-  [ $dif -lt 2 ] && echo exited in $dif seconds >&2
+
+  echo exited in $dif seconds, bailing out >&2
   rm -f pid 
+  kill -9 `pidof node`
   echo balancer exited `date` >> ~/logs/balancer.out.log 
+
 }
 
 start () {
@@ -47,33 +56,37 @@ start () {
     echo already running
     exit 1
   else
-    echo $$ > pid
+    cat pid
+    pwd
   fi
   shift
-  mkdir -p ~/logs
   cont "$@" &
 }
 
 stop () {
+
   if [ -e pid ] ; then 
-  rm -f pid
-  echo stopping balancer...
-  kill -9 `pidof node`
+    rm -f pid
+    echo stopping balancer...
+    kill -9 `pidof node`
+  else
+    echo already stopped
   fi
+
 }
 
 setup () {
-  OLD="$PWD"
-  cd /etc/rc2.d
+
+  OLD=$PWD
+  pushd /etc/rc2.d
   ln -s $OLD/start.sh S99balancer
-  cd $OLD
-  git config --add receive.denyCurrentBranch ignore
-  cd .git/hooks
-  ln -s post-receive $OLD
+  popd
+  
 } 
 
 restart () {
   stop
+  sleep 1
   start
 }
 
