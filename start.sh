@@ -21,6 +21,8 @@
 # this should be reliable and effective as long as it's used as intended.
 # --Dominic (5-12-2011)
 #
+. ~/.nvm/nvm.sh
+
 cont () {
   mkdir -p ~/logs
   dif=2
