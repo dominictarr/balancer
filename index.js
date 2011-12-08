@@ -93,6 +93,6 @@ var createHandler = module.exports = function (db) { //inject memory database.
 if(!module.parent)
   loadDB(config, function (err, db) {
     http.createServer(createHandler(db)).listen(config.port, function () {
-      console.error('listening on ' + config.port)
+      console.error('balancer listening on ' + config.port + ' in ' + config.env + ' enviroment')
     })
   })
