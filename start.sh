@@ -21,7 +21,7 @@
 # this should be reliable and effective as long as it's used as intended.
 # --Dominic (5-12-2011)
 #
-. ~/.nvm/nvm.sh
+. ~/.bashrc
 
 cont () {
   mkdir -p ~/logs
