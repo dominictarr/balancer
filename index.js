@@ -84,6 +84,7 @@ var createHandler = module.exports = function (db) { //inject memory database.
   })
 
   return pipes(
+      connect.logger(),
       util.pre('/_admin', admin),
       proxy,
       connect.errorHandler()
