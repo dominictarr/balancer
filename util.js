@@ -9,7 +9,6 @@ module.exports = {
 
 function pre (prefix, handler) {
   return function (req, res, next) {
-    console.error(req.url, prefix)
     if(req.url.indexOf(prefix) == 0) {
       req.url = req.url.replace(prefix, '')
       if(req.url[0] != '/')
