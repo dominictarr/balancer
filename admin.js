@@ -36,6 +36,21 @@ return pipes(
       // else, update it.
       // restart this app if it is currently running.
     }),
+    pre('/restart/', function (req, res, next) {
+      var p = req.url
+      model.get({dir: p}).restart()
+      //tail the output...
+      util.send(res, model.info(data))
+
+/*      , function (err, data) {
+        if(err) return next(err)
+        util.send(res, model.info(data))
+      })*/
+      // if the app isn't running, start it.
+      // else, update it.
+      // restart this app if it is currently running.
+    }),
+    
 /*    pre('/enable/', function (req, res, next) {  
       var p = req.url
       model.getApp({dir: p})

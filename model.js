@@ -62,7 +62,7 @@ function (emitter) {
 
   model.find = matcher(instances, u.find)
   model.filter = matcher(instances, u.filter)
-//  model.findApp = matcher(apps, u.find)
+  //model.findApp = matcher(apps, u.find)
 
   model.createApp = 
     function (app) {
@@ -128,16 +128,20 @@ function (emitter) {
       return inst
     }
 
+  function overwrite (inst, package){ 
+    inst.package = package
+    inst.domains = package.domains || []
+    return inst
+  }
+
   model.create =
     function create (dir, data) {
-      var inst = {
+      var inst = overwrite({
         type: 'instance',
         dir: dir,
         branch: dir.split('/').pop(),
-        package: data,
-        domains: data.domains || [],
         port: u.randomInt(1000, 50000)
-      }
+      }, data)
       inst.__defineGetter__('testid', function () {
         return apps[this.package.name].testid
       })
@@ -158,17 +162,18 @@ function (emitter) {
       var dir = p.indexOf(process.env.HOME) == 0 ? p : join(process.env.HOME, p)
       util.readJSON(dir+'/package.json', function (err, package) {
         if(err) return cb(err)
-        var app = model.find({dir: p})
-        if(!app) {
-          instances.push(app = model.create(dir, package))
+        var inst = model.find({dir: p})
+        if(!inst) {
+          instances.push(inst = model.create(dir, package))
           ///XXX
-          app.monitor.stderr.pipe(process.stderr, {end: false})
-          app.monitor.stdout.pipe(process.stdout, {end: false})
+          inst.monitor.stderr.pipe(process.stderr, {end: false})
+          inst.monitor.stdout.pipe(process.stdout, {end: false})
           //XXX
         } else {
-          app.monitor.restart()
+          overwrite(inst, package)
+          inst.monitor.restart()
         }
-        cb(null, app)
+        cb(null, inst)
       })
     }
 

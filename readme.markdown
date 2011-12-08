@@ -4,11 +4,18 @@ mini platform for continous deployment with split testing.
 
 ##TODO
 
-  * figure out cookies -- DONE
-  * support branches.  -- DONE
-  * refactor out _admin api. --DONE
+  * figure out cookies        -- DONE
+  * support branches.         -- DONE
+  * refactor out _admin api.  -- DONE
   * stats aggregation.
-  * minimal persistance.  -- DONE
+  * minimal persistance.      -- DONE
+
+## FIX BUGS
+
+  * app doesn't update properly
+  * tail logs after update.
+  * should reread package when restarting.
+  * more tests, integration tests. update app test.
 
 ## persistance.
 
