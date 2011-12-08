@@ -16,7 +16,7 @@ var pipes = require('mw-pipes')
 //automatically set production if running as root.
 var env = opts.env 
   || process.env.frank_env 
-  || process.getuid() == 0 ?  'production' : 'development'
+  || ( process.getuid() == 0 ?  'production' : 'development' )
 
 var config = cc(
       {env: env},
