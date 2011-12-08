@@ -13,7 +13,8 @@
     "dirty": "~0.9.5",
     "ubelt": "~3.0.0",
     "event-stream": "~0.7.0",
-    "config-chain": "~0.1.0"
+    "config-chain": "~0.1.0",
+    "optimist": "0.2.8"
   },
   "devDependencies": {},
   "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://bit.ly/dominictarr)",
