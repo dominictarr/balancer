@@ -155,7 +155,6 @@ function (emitter) {
       emitter.emit('instance', inst)
       return inst
     }
-  
 
   model.update = 
     function update(p, cb) {
@@ -190,7 +189,7 @@ function (emitter) {
 
   model.list = 
     function list (opts) {
-      return u.map(opts ? model.filter(opts) : apps, model.info)
+      return u.map(opts ? model.filter(opts) : instances, model.info)
     }
 
   return model
