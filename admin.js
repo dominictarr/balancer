@@ -8,8 +8,6 @@ var pipes = require('mw-pipes')
 
 var pre = util.pre
 
-
-
 module.exports = function(model) {
 
 //retrives apps by path.
@@ -49,8 +47,8 @@ return pipes(
         }, 404)
       apps[p].enabled = true        
     }),*/
-    pre('/_list', function (req, res, next) {
-      send(res, model.list())
+    pre('/list', function (req, res, next) {
+      util.send(res, model.list())
     }),
     //_restart
     //_tail    -- log stats to stdout, newline seperated json.

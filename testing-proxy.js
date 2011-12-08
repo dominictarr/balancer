@@ -13,7 +13,6 @@ module.exports = function (model) {
       //get the current test.
       //assign the session to this app if it's not already.
       //get the current test for app.    
-      //XXX not implemented yet...
       var inst = model.getTestApp({
         host: req.headers.host,
         branch: req.cookies.branch,

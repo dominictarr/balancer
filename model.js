@@ -185,7 +185,7 @@ function (emitter) {
 
   model.list = 
     function list (opts) {
-      u.map(opts ? model.filter(opts) : apps, info)
+      return u.map(opts ? model.filter(opts) : apps, model.info)
     }
 
   return model

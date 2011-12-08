@@ -33,6 +33,8 @@ function run (opts) {
   opts.port = opts.port || rport()
   m.env = u.merge({PORT: opts.port}, process.env)
 
+  //XXX: this should reload the package when it restarts
+  
   function start () {
     console.error(process.execPath, [m.package.main || 'index.js'], {cwd: m.dir})
     m.process = cp.spawn(process.execPath, [m.package.main || 'index.js'], {cwd: m.dir, env: m.env})  
@@ -53,6 +55,7 @@ function run (opts) {
     })
   }
   start()
+
   m.restart = function (sig) {
     m.process.kill(sig || 'SIGINT')
   }
