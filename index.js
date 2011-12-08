@@ -24,7 +24,7 @@ var config = cc(
       //don't need any other config yet    
       {
         dbpath: join(process.env.HOME, 'frank.'+env+'.dirty')
-      , port: 'env' == 'production' ? 80 : 8080
+      , port: env == 'production' ? 80 : 8080
       }
     ).store
 
