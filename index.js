@@ -13,14 +13,18 @@ var pipes = require('mw-pipes')
   , EventEmitter = require('events').EventEmitter
   ;
 
-var env = opts.env || process.env.frank_env || 'development'
+//automatically set production if running as root.
+var env = opts.env 
+  || process.env.frank_env 
+  || process.getuid() == 0 ?  'production' : 'development'
+
 var config = cc(
       {env: env},
       opts,
       //don't need any other config yet    
       {
         dbpath: join(process.env.HOME, 'frank.'+env+'.dirty')
-      , port: process.getuid() == 0 ? 80 : 8080 //port 80 if root
+      , port: 'env' == 'production' ? 80 : 8080
       }
     ).store
 
