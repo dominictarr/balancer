@@ -1,11 +1,11 @@
-{
-  "name": "frankenstien",
-  "version": "0.0.0",
+  {
+  "name": "balancer",
+  "version": "0.1.0",
   "description": "",
-  "homepage": "http://github.com/dominictarr/frankenstien",
+  "homepage": "http://github.com/dominictarr/balancer",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dominictarr/frankenstien.git"
+    "url": "https://github.com/dominictarr/balancer.git"
   },
   "dependencies": {
     "mw-pipes": "0",
