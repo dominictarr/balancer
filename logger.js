@@ -44,11 +44,14 @@ function safestring(obj){
 
 function stringify (event, data) {
   //XXX: guard against stringify throwing on circular objects
+  console.error(event, data)
   if('string' !== typeof event)
     event = safestring(event)
   if(!data)
     data = {}
-  return safestring([event, data, timestamp()])
+  if('function' == typeof data.info)
+    data = data.info()    
+  return safestring([event, data , timestamp()])
 }
 
 function log(event, data) {

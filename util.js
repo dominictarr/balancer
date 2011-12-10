@@ -21,7 +21,7 @@ function pre (prefix, handler) {
 
 function send(res, obj, status) {
   res.writeHeader(status || 200, {'content-type': 'application/json'})
-  res.end(JSON.stringify(obj))
+  res.end(JSON.stringify(obj.info ? obj.info() : obj))
 }
 
 function readJSON(file, cb) {

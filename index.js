@@ -9,7 +9,7 @@ var pipes = require('mw-pipes')
   , u = require('ubelt')
   , cc = require('config-chain')
   , dirty = require('dirty')
-  , opts = require('optimist')
+  , opts = require('optimist').argv
   , EventEmitter = require('events').EventEmitter
   ;
 
@@ -29,6 +29,7 @@ var config = cc(
     ).store
 
 function loadDB(config, cb) {
+
   //use an in memory db if env == 'test'
   if(config.env == 'test') {
     cb(null, dirty())
@@ -44,7 +45,8 @@ var createHandler = module.exports = function (db) { //inject memory database wh
 
   var emitter = new EventEmitter()
     , model = require('./model')(emitter) //db does nothing so far
-    , admin = require('./admin')(model, emitter)
+    , ctrl = require('./controller')(model, emitter)
+    , admin = require('./admin')(ctrl, model, emitter)
     , proxy = require('./testing-proxy')(model, emitter)
     , util = require('./util')
     , logger = require('./logger')
@@ -79,7 +81,7 @@ var createHandler = module.exports = function (db) { //inject memory database wh
   })
   db.forEach(function (key, value) {
     if(value.type == 'instance'){
-      model.update(key, function (){})
+      ctrl.update(key, function (){})
     }
   })
 
@@ -91,12 +93,16 @@ var createHandler = module.exports = function (db) { //inject memory database wh
       connect.logger(),
       util.pre('/_admin', admin),
       proxy,
-      connect.errorHandler()
+      function (err, req, res, next) {
+        console.error(err)
+        util.send(res, err, 500)
+      }
     )
 
   return {
     model: model,
     admin: admin,
+    controller: ctrl,
     proxy: proxy,
     emitter: emitter,
     handler: handler,

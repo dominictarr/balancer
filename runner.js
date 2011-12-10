@@ -17,6 +17,12 @@ make it seemlessly part of this thing? or handle rollbacks on the next level up?
 it feels a bit messy here, and might want to gather different stats.
 
 that suggests next level...
+
+although, could handle zero-downtime restarting in here,
+hmm. maybe make this into a plugin, so that it is possible to 
+
+it may be simplest to just let this class represent the running app.
+
 */
 function rport () {
   return Math.round(Math.random()*40000)+1000
@@ -31,6 +37,12 @@ function info(m) {
   }
 }
 
+//should I change this into a new Runner () style class?
+//is there anything actually to be gained from that?
+//maybe more idempotent.
+//we are definately dealing with state and behaviour here.
+//it's a class.
+
 module.exports =
 function run (opts) {
   var m = new EventEmitter()
@@ -41,28 +53,28 @@ function run (opts) {
   m.keepAlive = opts.keepAlive !== false // defalt to true
   opts.port = opts.port || rport()
   m.env = u.merge({PORT: opts.port}, process.env)
-
+  m.state = 'init'
   //XXX: this should reload the package when it restarts
   
-  function start () {
+  m.start = function () {
     m.process = cp.spawn(process.execPath, [m.package.main || 'index.js'], {cwd: m.dir, env: m.env})  
-
+    m.state = 'running'
     m.process.stdout.pipe(m.stdout, {end: false})
     m.process.stderr.pipe(m.stderr, {end: false})
 
     var pid = m.process.pid
     m.process.on('exit', function () {
       if(m.keepAlive) 
-        start()
+        m.start()
       else{
         m.stdout.end()
         m.stderr.end()
+        m.emit('end', info(m))
       }
       m.emit('exit', info(m))
     })
     m.emit('start', info(m))
   }
-  start()
 
   m.restart = function (sig) {
     m.process.kill(sig || 'SIGINT')

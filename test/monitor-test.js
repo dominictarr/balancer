@@ -14,8 +14,8 @@ var pkg = {
   
 test('start child process', function (t) {
   var m = runner({dir: join(__dirname, '../examples/helloworld/master'), package: pkg})
-
   m.stderr.pipe(process.stderr, {end: false})
+  m.start()
   
   es.connect(
     m.stdout,

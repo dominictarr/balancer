@@ -1,4 +1,4 @@
-# frankenstien
+# balancer
 
 mini platform for continous deployment with split testing.
 
@@ -12,18 +12,44 @@ mini platform for continous deployment with split testing.
 
 ## FIX BUGS
 
-  * app doesn't update properly
-  * tail logs after update.
-  * should reread package when restarting.
+  * app doesn't update properly -- DONE
+  * tail logs after update.  (if pass in ?tail=true)
+  * should reread package when restarting. --DONE
   * more tests, integration tests. update app test.
 
-## persistance.
+parseable logging is gonna make integration testing really easy.
+will be able to deploy apps and verify correct things in logs.
 
-if the proxy crashes, it must restart without losing it's state.
-what must it remember?
+seems to basically be working now...
 
-  * which apps are running... restart the apps as if they had been just updated.
-  
+when update app and git deploy, http request with the correct thing
+
+## testing
+
+not testing up front sucks. I was obsessed with testing,
+I got good enough to write organised code without testing...
+but that only works on the first dash. when it comes time to refactor you need tests.
+
+TESTS
+
+  * model: create apps, find apps, getTestApp (also, move all cp stuff to runner) --done
+  * controller... or integration tests?
+  * admin/index: integration tests, test /_admin/tail.
+
+INTEGRATION TESTS
+
+  * start app, tail ... emits correct data
+  * restart app. updates correctly.
+  * writes cookie
+  * proxies to correct branch.
+
+next level
+
+  * zero-downtime.
+  * stats aggregation.
+
+make sure integration tests are flexible enough to run against remote server.
+
 ## stats
 
 each event needs to be valid?

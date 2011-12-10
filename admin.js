@@ -8,46 +8,51 @@ var pipes = require('mw-pipes')
 
 var pre = util.pre
 
-module.exports = function(model, emitter) {
+module.exports = function(ctrl, model, emitter) {
 
 //retrives apps by path.
 //creates apps.
 //updates apps.
 
+  function cleanUrl(dir) {
+    return dir[0] == '/' ? dir.slice(1) : dir  
+  }
+
   function getApp(handler) {
     return function (req, res, next) {
-      var p = req.url
-        , app = model.find({dir:p})
-      //no. pass to error handler.
-      if(!app)
-        return util.send(res, {error: 'not_found', path: p, message: 'app does not exist'})
-      handler.call({req:req, res:res, next:next}, app)
+      try {
+        var dir = cleanUrl(req.url)
+        var app = model.find({dir:dir})
+        //no. pass to error handler.
+
+        if(!app)
+          return next({error: 'not_found', path: dir, message: 'app does not exist'})
+        handler.call({req:req, res:res, next:next}, app)
+      } catch (err) {
+        next(err)
+      }
     }
   }
 
 return pipes(
     pre('/update/', function (req, res, next) {
-      var p = req.url
-      model.update(p, function (err, data) {
+      var dir = cleanUrl(req.url)
+
+      ctrl.update(dir, function (err, data) {
         if(err) return next(err)
-        util.send(res, model.info(data))
+        util.send(res, data)
       })
       // if the app isn't running, start it.
       // else, update it.
       // restart this app if it is currently running.
     }),
     pre('/restart/', function (req, res, next) {
-      var p = req.url
-      model.find({dir: p}).monitor.restart()
-      //tail the output...
-      util.send(res, model.info(data))
-
+      //XXX: error paths... if there is no app?
+      util.send(res, ctrl.restart(cleanUrl(req.url)))
     }),
-    
     pre('/list', function (req, res, next) {
-      util.send(res, model.list())
+      util.send(res, ctrl.list(cleanUrl(req.url)))
     }),
-    //_restart
     pre('/tailerr/', getApp(function (app) {
       app.monitor.stderr.pipe(this.res, {end: false})
     })),

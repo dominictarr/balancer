@@ -67,10 +67,10 @@ function (emitter) {
   model.createApp = 
     function (app) {
       app = apps[app.name] = {
-          name: app.name,
-          type: 'app',
-          testid: app.testid || Math.random(), //updating the test id will randomly reassign users to branches.
-          instances: app.instances || []
+        name: app.name,
+        type: 'app',
+        testid: ''+ (app.testid || Math.random()), //updating the test id will randomly reassign users to branches.
+        instances: app.instances || []
       }
       app.__defineGetter__('branches', function () {
         u.map(this.instances, function (v) { return v.branch })        
@@ -134,55 +134,79 @@ function (emitter) {
   }
 
   model.create =
-    function create (dir, data) {
+    function create (dir, package) {
       var inst = overwrite({
         type: 'instance',
         dir: dir,
         branch: dir.split('/').pop(),
         port: u.randomInt(1000, 50000)
-      }, data)
+      }, package)
       inst.__defineGetter__('testid', function () {
         return apps[this.package.name].testid
       })
       inst.__defineGetter__('app', function () {
         return apps[this.package.name]
       })
-  
-      //XXX validate instance XXX
-      inst.monitor = runner(inst)
+      inst.__defineGetter__('pid', function () {
+        return this.monitor && this.monitor.process && this.monitor.process.pid
+      })
+      inst.__defineGetter__('name', function () {
+        return this.package.name
+      })
+      inst.info = function () {
+        return model.info(this)
+      }
       model.updateApp(inst)
-      emitter.emit('instance', model.info(inst))
+      instances.push(inst)
+      emitter.emit('instance', inst)
       return inst
     }
 
+/*
+Idempotently create a instance.
+if it's not already exiting, update it...
+
+maybe instance needs to be an object? it has state.
+
+new Instance(dir, package) 
+instance.update(dir, package)
+
+*/
+
+
   model.update = 
+    function (inst, package) {
+      overwrite(inst, package)
+      emitter.emit('instance', inst)
+      return inst
+    }
+
+
+/*  model.update = 
     function update(p, cb) {
       var dir = p.indexOf(process.env.HOME) == 0 ? p : join(process.env.HOME, p)
-      util.readJSON(dir+'/package.json', function (err, package) {
+      util.readJSON(dir+'/package.json', function (err, package) { //move into controller
         if(err) return cb(err)
         var inst = model.find({dir: p})
         if(!inst) {
           instances.push(inst = model.create(dir, package))
-          ///XXX
-          inst.monitor.stderr.pipe(process.stderr, {end: false})
-          inst.monitor.stdout.pipe(process.stdout, {end: false})
-          //XXX
         } else {
-          overwrite(inst, package)
-          inst.monitor.restart()
+          inst.monitor.restart() //move into controller
         }
         cb(null, inst)
       })
     }
+*/
 
   model.info = 
     function info(app) {
       return {
         dir: app.dir
       , port: app.port
-      , branch: app.branch  
+      , branch: app.branch
       , package: app.package
       , type: app.type
+      , pid: app.pid
       }  
     }
 
