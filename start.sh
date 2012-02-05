@@ -41,7 +41,7 @@ cont () {
     dif=$(($stop - $start))
 
     # echo the stderr to show the 
-    tail ~/logs/balancer.err.log
+    tail  ~/logs/balancer.out.log ~/logs/balancer.err.log
 
   done
 
