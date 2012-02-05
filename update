@@ -2,5 +2,5 @@
 
 echo starting balancer, on `hostname -i` - `date`
 
-npm install -d
+npm rebuild
 nohup ./start.sh restart &

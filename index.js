@@ -24,6 +24,7 @@ var config = cc(
       //don't need any other config yet    
       {
         dbpath: join(process.env.HOME, 'frank.'+env+'.dirty')
+      , adminPort: 9090
       , port: env == 'production' ? 80 : 8080
       }
     ).store
@@ -41,28 +42,17 @@ function loadDB(config, cb) {
   }
 }
 
-var createHandler = module.exports = function (db) { //inject memory database when testing
+var createAdmin = function (model, emitter) {
+  var ctrl = require('./controller')(model, emitter)
+  return require('./admin')(ctrl, model, emitter)
+}
 
-  var emitter = new EventEmitter()
-    , model = require('./model')(emitter) //db does nothing so far
-    , ctrl = require('./controller')(model, emitter)
-    , admin = require('./admin')(ctrl, model, emitter)
-    , proxy = require('./testing-proxy')(model, emitter)
-    , util = require('./util')
-    , logger = require('./logger')
-    ;
-    
-  logger.logEvents(emitter)
-
-  //hook up model to persistance
-  //whenever a instance or app is updated, save it.
-
+var coupleModel2DB = function (model, db, emitter) {
   function save(k,v) {
     db.set(k, v, function logSave() {
       emitter.emit ('saved', v)
     })
   }
-
   emitter.on('instance', function (inst) {
     save(inst.dir, model.info(inst))
   })
@@ -84,6 +74,20 @@ var createHandler = module.exports = function (db) { //inject memory database wh
       ctrl.update(key, function (){})
     }
   })
+}
+
+var createHandler = module.exports = function (model, emitter) { //inject memory database when testing
+
+  var emitter = new EventEmitter()
+    //, model = require('./model')(emitter) //db does nothing so far
+    //, ctrl = require('./controller')(model, emitter)
+    //, admin = require('./admin')(ctrl, model, emitter)
+    , proxy = require('./testing-proxy')(model, emitter)
+    , util = require('./util')
+    , logger = require('./logger')
+    ;
+    
+  logger.logEvents(emitter)
 
   var handler = pipes(
       function (req, res, next) {
@@ -91,7 +95,8 @@ var createHandler = module.exports = function (db) { //inject memory database wh
         next()
       },
       connect.logger(),
-      util.pre('/_admin', admin),
+//run admin on a seperate port.
+//      util.pre('/_admin', admin),
       proxy,
       function (err, req, res, next) {
         console.error(err)
@@ -101,20 +106,31 @@ var createHandler = module.exports = function (db) { //inject memory database wh
 
   return {
     model: model,
-    admin: admin,
-    controller: ctrl,
+//    admin: admin,
+//    controller: ctrl,
     proxy: proxy,
     emitter: emitter,
     handler: handler,
   }
 }
 
-if(!module.parent)
+if(!module.parent) {
+  var emitter = new EventEmitter()
   loadDB(config, function (err, db) {
-    var balancer = createHandler(db)
+    var model    = require('./model')(emitter)
+
+    coupleModel2DB(model, db, emitter)
+
+    var admin    = createAdmin(model, emitter)
+    var balancer = createHandler(db, emitter)
+
     http.createServer(balancer.handler).listen(config.port, function () {
-      
       balancer.emitter.emit('listening',
         {app:'balancer', port: config.port, env: config.env })
     })
+    http.createServer(admin).listen(config.adminPort, function () {
+      balancer.emitter.emit('admin_listening',
+        {app:'admin', port: config.adminPort })
+    })
   })
+}

@@ -14,12 +14,12 @@ module.exports = function (model, emitter) {
 
   ctrl.update = 
     function (dir, callback) {
+      console.log(dir)
       var _dir = dir.indexOf(process.env.HOME) == 0 ? dir : join(process.env.HOME, dir)
       util.readJSON(_dir+'/package.json', function (err, package) { //move into controller
         if(err) return callback(err)
         try {
-          var inst = model.find({dir: dir})
-          console.error('eouaontuhaonsehu', inst)
+          var inst = model.find({dir: _dir})
           if (inst) {
             model.update(inst, package)      
             inst.monitor.restart()
@@ -33,9 +33,7 @@ module.exports = function (model, emitter) {
             //starts automatically
                         
             ;['exit','start', 'restart'].forEach(function (event) {
-              console.error('REEMIT', event)
-              inst.monitor.on(event, function () { 
-                console.error(event, '!!!!!!!!!!!!!!')
+              inst.monitor.on(event, function () {
                 emitter.emit(event, inst)
               })
             })

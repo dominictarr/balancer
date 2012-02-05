@@ -35,8 +35,12 @@ module.exports = function(ctrl, model, emitter) {
   }
 
 return pipes(
+    function (req, res, next) {
+      console.log(req.method, req.url)
+      next()
+    },
     pre('/update/', function (req, res, next) {
-      var dir = cleanUrl(req.url)
+      var dir = '/'+cleanUrl(req.url)
 
       ctrl.update(dir, function (err, data) {
         if(err) return next(err)
@@ -62,7 +66,15 @@ return pipes(
     pre('/tail/', getApp(function (app) {
       app.monitor.stdout.pipe(this.res, {end: false})
       app.monitor.stderr.pipe(this.res, {end: false})
-    }))
+    })),
+    function (req, res) {
+      res.writeHeader(400)
+      res.end('usage: update, restart, list, tail')
+    },
+    function (err, req, res, next) {
+      console.error(err)
+      util.send(res, err, 500)
+    }
     //error handler here.
   ) 
 }

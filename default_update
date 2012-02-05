@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# This is the default script for an app running under balancer
+
+#you are expected to check in all your deps.
+npm rebuild
+#balancer should be running on localhost:9090
+curl localhost:9090/update/$PWD

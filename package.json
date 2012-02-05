@@ -23,5 +23,8 @@
     "test": "meta-test test/*.js",
     "start": "./run.sh start",
     "stop": "./run.sh stop"
+  },
+  "bin": {
+    "balancer_update": "./default_update"
   }
 }
