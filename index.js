@@ -42,12 +42,10 @@ function loadDB(config, cb) {
   }
 }
 
-var createAdmin = function (model, emitter) {
-  var ctrl = require('./controller')(model, emitter)
-  return require('./admin')(ctrl, model, emitter)
-}
+/*var createAdmin = function (model, emitter) {
+}*/
 
-var coupleModel2DB = function (model, db, emitter) {
+var coupleModel2DB = function (ctrl, model, db, emitter) {
   function save(k,v) {
     db.set(k, v, function logSave() {
       emitter.emit ('saved', v)
@@ -117,11 +115,12 @@ var createHandler = module.exports = function (model, emitter) { //inject memory
 if(!module.parent) {
   var emitter = new EventEmitter()
   loadDB(config, function (err, db) {
-    var model    = require('./model')(emitter)
+    var model = require('./model')(emitter)
+    var ctrl  = require('./controller')(model, emitter)
+    var admin = require('./admin')(ctrl, model, emitter)
 
-    coupleModel2DB(model, db, emitter)
+    coupleModel2DB(ctrl, model, db, emitter)
 
-    var admin    = createAdmin(model, emitter)
     var balancer = createHandler(db, emitter)
 
     http.createServer(balancer.handler).listen(config.port, function () {
