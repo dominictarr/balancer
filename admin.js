@@ -1,4 +1,5 @@
 var pipes = require('mw-pipes')
+  , qs = require('querystring')
   , fs = require('fs')
   , join = require('path').join
   , runner = require('./runner')
@@ -35,33 +36,63 @@ module.exports = function(ctrl, model, emitter) {
     }
   }
 
+function toBool (val) {
+  return val === '' ? true : val
+}
+function tail (res, app, which) {
+  if('false' === which.tail)
+    return true
+  var outs = []
+
+  if(toBool(which.tailout) || toBool(which.tail))
+   outs.push('stdout')
+  if(toBool(which.tailerr) || toBool(which.tail))
+   outs.push('stderr')
+
+  outs.forEach(function (out) {
+    app.monitor[out].pipe(res, {end: false})
+  })
+
+  return outs.length == 0
+}
+
 return pipes(
     function (req, res, next) {
+      var p = util.urlQuery(req.url)
+      req.url = p.url
+      req.query = p.query
       next()
     },
+    /*
+      /status/
+      get git commit
+
+    */
     pre('/update/', function (req, res, next) {
       var dir = cleanUrl(req.url)
 
-      ctrl.update(dir, function (err, data) {
+      ctrl.update(dir, function (err, inst) {
         if(err) return next(err)
-        util.send(res, data)
+        util.send(res, model.info(inst), 200, tail(res, inst, req.query))
       })
       // if the app isn't running, start it.
       // else, update it.
       // restart this app if it is currently running.
     }),
+    //ADD TAILABITILY TO ALL THESE, ACTUALLY, TAIL BY DEFAULT
     pre('/restart/', function (req, res, next) {
       //XXX: error paths... if there is no app?
-      util.send(res, ctrl.restart(cleanUrl(req.url)))
+      console.log(req)
+      var inst = ctrl.restart(cleanUrl(req.url))
+      util.send(res, inst, 200, tail(res, inst, req.query))
     }),
     pre('/list', function (req, res, next) {
-      util.send(res, ctrl.list(cleanUrl(req.url)))
+      util.send(res, ctrl.list())
     }),
     pre('/tailerr/', getApp(function (app) {
       app.monitor.stderr.pipe(this.res, {end: false})
     })),
     pre('/tailout/', getApp(function (app) {
-      app.monitor.stdout.pipe(this.res, {end: false})
     })),
     pre('/tail/', getApp(function (app) {
       app.monitor.stdout.pipe(this.res, {end: false})

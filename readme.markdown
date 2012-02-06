@@ -9,6 +9,8 @@ mini platform for continous deployment with split testing.
   * refactor out _admin api.  -- DONE
   * stats aggregation.
   * minimal persistance.      -- DONE
+  * middleware that writes null chars to make curl stream nice (check user agent)
+  * cli tool instead of curl
 
 ## FIX BUGS
 

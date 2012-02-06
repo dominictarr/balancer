@@ -55,11 +55,11 @@ function stringify (event, data) {
 }
 
 function log(event, data) {
-  console.log(stringify(event, data))
+//  console.log(stringify(event, data))
 }
 
 function err(event, data) {
-  console.err(stringify(event, data))
+//  console.err(stringify(event, data))
 }
 
 function logEvents(emitter) {

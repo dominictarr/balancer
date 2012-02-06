@@ -1,10 +1,13 @@
 var fs = require('fs')
   , join = require('path').join
+  , url = require ('url')
+  , qs = require('querystring')
 
 module.exports = {
   pre: pre,
   send: send,
-  readJSON: readJSON
+  readJSON: readJSON,
+  urlQuery: urlQuery
 }
 
 function pre (prefix, handler) {
@@ -19,9 +22,10 @@ function pre (prefix, handler) {
   }  
 }
 
-function send(res, obj, status) {
+function send(res, obj, status, end) {
   res.writeHeader(status || 200, {'content-type': 'application/json'})
-  res.end(JSON.stringify(obj.info ? obj.info() : obj))
+ 
+  res[end !== false ? 'end' : 'write'](JSON.stringify(obj.info ? obj.info() : obj))
 }
 
 function readJSON(file, cb) {
@@ -34,4 +38,12 @@ function readJSON(file, cb) {
     }
     cb(null, data)
   })
+}
+
+function urlQuery (str) {
+  var i = str.indexOf('?')
+  return {
+    url:   i === -1 ? str : str.substring(0, i)
+  , query: i === -1 ? {}  : qs.parse(str.substring(i+1))
+  }
 }

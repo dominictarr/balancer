@@ -11,7 +11,6 @@ var util = require('./util')
 module.exports = function (model, emitter) {
 
   var ctrl = {}
-
   ctrl.update = 
     function (dir, callback) {
       var _dir = dir.indexOf(process.env.HOME) == 0 ? dir : join(process.env.HOME, dir)
@@ -51,7 +50,7 @@ module.exports = function (model, emitter) {
       var inst = model.find({dir: dir})
       if(inst) {
         action(inst)
-      return model.info(inst)
+      return inst
       } 
       throw {
         error: 'not_found',
