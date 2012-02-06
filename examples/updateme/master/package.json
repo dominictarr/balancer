@@ -1,0 +1,5 @@
+{
+  "name": "updateme",
+  "domains": ["update.me"],
+  "main": "server.js"
+}

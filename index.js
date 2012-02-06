@@ -41,11 +41,26 @@ function loadDB(config, cb) {
     })
   }
 }
+/*
 
-/*var createAdmin = function (model, emitter) {
-}*/
+I broke alot of stuff here when I refactored. 
+had a few errors due to injecting the wrong type.
+gonna reduce it back to one function
 
-var coupleModel2DB = function (ctrl, model, db, emitter) {
+*/
+
+
+var createApp = function (db) {
+
+  var emitter = new EventEmitter()
+    , model = require('./model')(emitter) //db does nothing so far
+    , ctrl = require('./controller')(model, emitter)
+    , admin = require('./admin')(ctrl, model, emitter)
+    , proxy = require('./testing-proxy')(model, emitter)
+    , util = require('./util')
+    , logger = require('./logger')
+    ;
+
   function save(k,v) {
     db.set(k, v, function logSave() {
       emitter.emit ('saved', v)
@@ -72,18 +87,6 @@ var coupleModel2DB = function (ctrl, model, db, emitter) {
       ctrl.update(key, function (){})
     }
   })
-}
-
-var createHandler = module.exports = function (model, emitter) { //inject memory database when testing
-
-  var emitter = new EventEmitter()
-    //, model = require('./model')(emitter) //db does nothing so far
-    //, ctrl = require('./controller')(model, emitter)
-    //, admin = require('./admin')(ctrl, model, emitter)
-    , proxy = require('./testing-proxy')(model, emitter)
-    , util = require('./util')
-    , logger = require('./logger')
-    ;
     
   logger.logEvents(emitter)
 
@@ -97,15 +100,15 @@ var createHandler = module.exports = function (model, emitter) { //inject memory
 //      util.pre('/_admin', admin),
       proxy,
       function (err, req, res, next) {
-        console.error(err)
+        console.error(err.stack)
         util.send(res, err, 500)
       }
     )
 
   return {
     model: model,
-//    admin: admin,
-//    controller: ctrl,
+    adminHandler: admin,
+    controller: ctrl,
     proxy: proxy,
     emitter: emitter,
     handler: handler,
@@ -113,22 +116,22 @@ var createHandler = module.exports = function (model, emitter) { //inject memory
 }
 
 if(!module.parent) {
-  var emitter = new EventEmitter()
+//  var emitter = new EventEmitter()
   loadDB(config, function (err, db) {
-    var model = require('./model')(emitter)
-    var ctrl  = require('./controller')(model, emitter)
-    var admin = require('./admin')(ctrl, model, emitter)
+//    var model = require('./model')(emitter)
+//    var ctrl  = require('./controller')(model, emitter)
+//    var admin = require('./admin')(ctrl, model, emitter)
 
-    coupleModel2DB(ctrl, model, db, emitter)
+//    coupleModel2DB(ctrl, model, db, emitter)
 
-    var balancer = createHandler(db, emitter)
+    var app = createApp(db)
 
-    http.createServer(balancer.handler).listen(config.port, function () {
-      balancer.emitter.emit('listening',
+    http.createServer(app.handler).listen(config.port, function () {
+      app.emitter.emit('listening',
         {app:'balancer', port: config.port, env: config.env })
     })
-    http.createServer(admin).listen(config.adminPort, function () {
-      balancer.emitter.emit('admin_listening',
+    http.createServer(app.adminHandler).listen(config.adminPort, function () {
+      app.emitter.emit('admin_listening',
         {app:'admin', port: config.adminPort })
     })
   })

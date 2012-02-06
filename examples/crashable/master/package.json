@@ -1,0 +1,5 @@
+{
+  "name": "crashable",
+  "domains": ["crashable.com"],
+  "main": "server.js"
+}

@@ -14,7 +14,6 @@ module.exports = function (model, emitter) {
 
   ctrl.update = 
     function (dir, callback) {
-      console.log(dir)
       var _dir = dir.indexOf(process.env.HOME) == 0 ? dir : join(process.env.HOME, dir)
       util.readJSON(_dir+'/package.json', function (err, package) { //move into controller
         if(err) return callback(err)

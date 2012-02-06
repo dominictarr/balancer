@@ -15,7 +15,8 @@ module.exports = function(ctrl, model, emitter) {
 //updates apps.
 
   function cleanUrl(dir) {
-    return dir[0] == '/' ? dir.slice(1) : dir  
+    return dir
+    //return dir[0] == '/' ? dir.slice(1) : dir  
   }
 
   function getApp(handler) {
@@ -36,11 +37,10 @@ module.exports = function(ctrl, model, emitter) {
 
 return pipes(
     function (req, res, next) {
-      console.log(req.method, req.url)
       next()
     },
     pre('/update/', function (req, res, next) {
-      var dir = '/'+cleanUrl(req.url)
+      var dir = cleanUrl(req.url)
 
       ctrl.update(dir, function (err, data) {
         if(err) return next(err)

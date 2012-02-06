@@ -38,6 +38,7 @@ function createPlainProxy(t, h) {
 }
 
 var r = '' + Math.random()
+
 test('simple proxy', createProxyTest({
   plan:3,
   target: function (t, h) {
@@ -58,6 +59,30 @@ test('simple proxy', createProxyTest({
     }) 
   }
 }))
+
+var r4 = ''+Math.random()
+
+test('proxy with path', createProxyTest({
+  plan:3,
+  target: function (t, h) {
+      return function (req, res) {
+      t.ok(true, 'target requested')  
+      res.end(req.url)
+    }
+  },
+  proxy: createPlainProxy,
+  request: function (t, h) {  
+    request({
+      url: url.format({protocol: 'http',hostname: 'localhost', port: h.proxy, pathname: r4})
+    },function (err, res, body) {
+      t.equal(body, '/' + r4, 'proxy responded')
+      if(err) throw err
+      h.close()
+      t.end()
+    }) 
+  }
+}))
+
 
 var r2 = '' + Math.random()
 var r3 = '' + Math.random()
