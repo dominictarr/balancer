@@ -15,7 +15,7 @@ mini platform for continous deployment with split testing.
   * app doesn't update properly -- DONE
   * tail logs after update.  (if pass in ?tail=true)
   * should reread package when restarting. --DONE
-  * more tests, integration tests. update app test.
+  * more tests, integration tests. update app test. -- DONE
 
 parseable logging is gonna make integration testing really easy.
 will be able to deploy apps and verify correct things in logs.

@@ -2,10 +2,8 @@
 
 var pipes = require('mw-pipes')
   , connect = require('connect')
-  , fs = require('fs')
   , join = require('path').join
   , http = require('http')
-  , runner = require('./runner')
   , u = require('ubelt')
   , cc = require('config-chain')
   , dirty = require('dirty')
@@ -22,8 +20,7 @@ var config = cc(
       {env: env},
       opts,
       //don't need any other config yet    
-      {
-        dbpath: join(process.env.HOME, 'frank.'+env+'.dirty')
+      { dbpath: join(process.env.HOME, 'frank.'+env+'.dirty')
       , adminPort: 9090
       , port: env == 'production' ? 80 : 8080
       }
@@ -41,25 +38,25 @@ function loadDB(config, cb) {
     })
   }
 }
-/*
-
-I broke alot of stuff here when I refactored. 
-had a few errors due to injecting the wrong type.
-gonna reduce it back to one function
-
-*/
-
 
 var createApp = function (db) {
 
+  /*
+    here we are setting up all the modules with dependency injection.
+    this makes it really easy to seperate each part for testing.
+  */
   var emitter = new EventEmitter()
-    , model = require('./model')(emitter) //db does nothing so far
+    , model = require('./model')(emitter)
     , ctrl = require('./controller')(model, emitter)
     , admin = require('./admin')(ctrl, model, emitter)
     , proxy = require('./testing-proxy')(model, emitter)
     , util = require('./util')
     , logger = require('./logger')
     ;
+  /*
+    listen for update events on the model, and saving them to disk.
+    most of the data is kept in memory, only likely to be running tens of apps.
+  */
 
   function save(k,v) {
     db.set(k, v, function logSave() {
@@ -75,7 +72,9 @@ var createApp = function (db) {
         return ~['name', 'type', 'testid'].indexOf(k)
       }))
   })
-  
+/*
+  after the db loads, initialize the model.
+*/
   //on load, recreate apps, and set testid
   db.forEach(function (key, value) {
     if(value.type == 'app') {
@@ -96,8 +95,6 @@ var createApp = function (db) {
         next()
       },
       connect.logger(),
-//run admin on a seperate port.
-//      util.pre('/_admin', admin),
       proxy,
       function (err, req, res, next) {
         console.error(err.stack)
@@ -116,16 +113,9 @@ var createApp = function (db) {
 }
 
 if(!module.parent) {
-//  var emitter = new EventEmitter()
   loadDB(config, function (err, db) {
-//    var model = require('./model')(emitter)
-//    var ctrl  = require('./controller')(model, emitter)
-//    var admin = require('./admin')(ctrl, model, emitter)
-
-//    coupleModel2DB(ctrl, model, db, emitter)
 
     var app = createApp(db)
-
     http.createServer(app.handler).listen(config.port, function () {
       app.emitter.emit('listening',
         {app:'balancer', port: config.port, env: config.env })
