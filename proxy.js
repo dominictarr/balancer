@@ -5,11 +5,15 @@ var http = require('http')
   ;
 
 module.exports = 
-function createHandler(getOpts) {
+function createHandler(opts) {
+  var agent = opts.agent === false ? false : new http.Agent()
+  var getDest = 'function' === typeof opts ? opts : opts.getDest
+  agent.maxSockets = opts.maxSockets || 500
+
  return function (req, res, next) { 
-    var _opts = getOpts(req)
+    var _opts = getDest(req)
     if(!_opts) return next({error: 'not_found', message: 'no proxy destination'})
-    var opts = u.deepMerge(_opts, {headers: req.headers, method: req.method, path: req.url, httpVersion: req.httpVersion, agent: false})
+    var opts = u.deepMerge(_opts, {headers: req.headers, method: req.method, path: req.url, httpVersion: req.httpVersion, agent: agent})
 
     //if the other errors, then give an error message.
     var _req = http.request(opts)
