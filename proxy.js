@@ -26,7 +26,11 @@ function createHandler(opts) {
       if (req.httpVersion === '1.0') {
         delete _res.headers['transfer-encoding'];
       }
-
+      var ended = false
+      _res.once('end', function () { ended = true })
+      _res.on('close', function () {
+        ended && _res.emit('end')
+      })
       res.writeHeader(_res.statusCode, _res.headers)
       _res.pipe(res)
     })
