@@ -7,7 +7,7 @@ log('started')
 
 require('http').createServer(function (req, res){
   log('request')
-  res.end('HOLA')
+  res.end(req.method === 'GET' ? 'HOLA' : req.method)
 }).listen(process.env.PORT || 8081)
 
 process.on('exit', function () {log('exit')})

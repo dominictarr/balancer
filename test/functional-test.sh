@@ -24,7 +24,12 @@ curl -sS localhost:9090/update/$PWD
 sleep 1
 
 assert diff <(curl -sS localhost:8080 -H 'host: helloworld.com') <(echo -n 'HOLA')
-echo $?
+
+assert diff <(curl -sS localhost:8080 -H 'host: helloworld.com' -X POST) <(echo -n 'POST')
+
+#curl localhost:9090/tail/helloworld
+# make a test for tailing...
+# will have to track the pid of curl and kill it.
 
 echo TEARDOWN: stop node process, if it\'s running
 kill -9 `pidof node`

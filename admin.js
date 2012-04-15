@@ -24,7 +24,8 @@ module.exports = function(ctrl, model, emitter) {
     return function (req, res, next) {
       try {
         var dir = cleanUrl(req.url)
-        var app = model.find({dir:dir})
+        var name = dir.split('/').join('')
+        var app = model.find({dir:dir}) || model.find({name: name})
         //no. pass to error handler.
 
         if(!app)

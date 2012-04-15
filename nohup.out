@@ -1,0 +1,90 @@
+already using 0.6.10
+already stopped
+cat: pid: No such file or directory
+/home/dominic/d/balancer
+starting balancer for 1 time  Tue Feb 7 19:57:15 NZDT 2012
+==> /home/dominic/logs/balancer.out.log <==
+balancer exited Sun Feb 5 20:38:27 NZDT 2012
+
+==> /home/dominic/logs/balancer.err.log <==
+    at afterRead (fs.js:1111:12)
+The "sys" module is now called "util". It should have a similar interface.
+
+node.js:201
+        throw e; // process.nextTick error, or 'error' event on first tick
+              ^
+Error: listen EADDRINUSE
+    at errnoException (net.js:642:11)
+    at Array.0 (net.js:743:26)
+    at EventEmitter._tickCallback (node.js:192:40)
+exited in 1 seconds, bailing out
+already using 0.6.10
+already stopped
+cat: pid: No such file or directory
+/home/dominic/d/balancer
+starting balancer for 1 time  Tue Feb 7 19:57:27 NZDT 2012
+already using 0.6.10
+stopping balancer...
+./start.sh: line 26: 15382 Killed                  node ./index.js "$@" >> ~/logs/balancer.out.log 2>> ~/logs/balancer.err.log
+==> /home/dominic/logs/balancer.out.log <==
+balancer exited Sun Feb 5 20:38:27 NZDT 2012
+balancer exited Tue Feb 7 19:57:16 NZDT 2012
+{"started":"2012-02-07T06:57:28.046Z"}
+
+==> /home/dominic/logs/balancer.err.log <==
+The "sys" module is now called "util". It should have a similar interface.
+
+node.js:201
+        throw e; // process.nextTick error, or 'error' event on first tick
+              ^
+Error: listen EADDRINUSE
+    at errnoException (net.js:642:11)
+    at Array.0 (net.js:743:26)
+    at EventEmitter._tickCallback (node.js:192:40)
+The "sys" module is now called "util". It should have a similar interface.
+exited in 10 seconds, bailing out
+kill: usage: kill [-s sigspec | -n signum | -sigspec] pid | jobspec ... or kill -l [sigspec]
+cat: pid: No such file or directory
+/home/dominic/d/balancer
+starting balancer for 1 time  Tue Feb 7 19:57:38 NZDT 2012
+./start.sh: line 26: 15481 Killed                  node ./index.js "$@" >> ~/logs/balancer.out.log 2>> ~/logs/balancer.err.log
+==> /home/dominic/logs/balancer.out.log <==
+balancer exited Sun Feb 5 20:38:27 NZDT 2012
+balancer exited Tue Feb 7 19:57:16 NZDT 2012
+{"started":"2012-02-07T06:57:28.046Z"}
+balancer exited Tue Feb 7 19:57:37 NZDT 2012
+{"started":"2012-02-07T06:57:38.914Z"}
+
+==> /home/dominic/logs/balancer.err.log <==
+    at EventEmitter._tickCallback (node.js:192:40)
+The "sys" module is now called "util". It should have a similar interface.
+The "sys" module is now called "util". It should have a similar interface.
+{ error: 'not_found', path: '/', message: 'app does not exist' }
+{ error: 'not_found',
+  path: '/helloworld',
+  message: 'app does not exist' }
+{ error: 'not_found',
+  path: '/helloworld',
+  message: 'app does not exist' }
+starting balancer for 2 time  Tue Feb 7 20:26:13 NZDT 2012
+./start.sh: line 26: 15705 Killed                  node ./index.js "$@" >> ~/logs/balancer.out.log 2>> ~/logs/balancer.err.log
+==> /home/dominic/logs/balancer.out.log <==
+balancer exited Sun Feb 5 20:38:27 NZDT 2012
+balancer exited Tue Feb 7 19:57:16 NZDT 2012
+{"started":"2012-02-07T06:57:28.046Z"}
+balancer exited Tue Feb 7 19:57:37 NZDT 2012
+{"started":"2012-02-07T06:57:38.914Z"}
+{"started":"2012-02-07T07:26:13.932Z"}
+
+==> /home/dominic/logs/balancer.err.log <==
+The "sys" module is now called "util". It should have a similar interface.
+The "sys" module is now called "util". It should have a similar interface.
+{ error: 'not_found', path: '/', message: 'app does not exist' }
+{ error: 'not_found',
+  path: '/helloworld',
+  message: 'app does not exist' }
+{ error: 'not_found',
+  path: '/helloworld',
+  message: 'app does not exist' }
+The "sys" module is now called "util". It should have a similar interface.
+starting balancer for 3 time  Tue Feb 7 20:43:01 NZDT 2012
