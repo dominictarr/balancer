@@ -12,7 +12,7 @@ module.exports = function (model) {
       //get the current app.
       //get the current test.
       //assign the session to this app if it's not already.
-      //get the current test for app.    
+      //get the current test for app.   
       var host = req.headers.host.split(':').shift() //ignore the port
 
       var inst = model.getTestApp({

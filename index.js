@@ -91,7 +91,7 @@ var createApp = function (db) {
 
   var handler = pipes(
       function (req, res, next) {
-        emitter.emit('request', {method: req.method, url: req.url})
+        emitter.emit('request', {method: req.method, url: req.url })
         next()
       },
       connect.logger(),
