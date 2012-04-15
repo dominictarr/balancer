@@ -9,7 +9,7 @@ function createHandler(getOpts) {
  return function (req, res, next) { 
     var _opts = getOpts(req)
     if(!_opts) return next({error: 'not_found', message: 'no proxy destination'})
-    var opts = u.deepMerge(_opts, {headers: req.headers, method: req.method, path: req.url, httpVersion: req.httpVersion})
+    var opts = u.deepMerge(_opts, {headers: req.headers, method: req.method, path: req.url, httpVersion: req.httpVersion, agent: false})
 
     //if the other errors, then give an error message.
     var _req = http.request(opts)
