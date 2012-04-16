@@ -16,7 +16,7 @@
     "config-chain": "~0.1.0",
     "optimist": "0.2.8",
     "trees": "0.0.3",
-    "http-proxy": "~0.8" 
+    "http-proxy": "0.8" 
   },
   "devDependencies": {},
   "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://bit.ly/dominictarr)",
