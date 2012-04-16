@@ -89,7 +89,7 @@ var createApp = function (db) {
     
   logger.logEvents(emitter)
 
-  var handler = pipes(
+  var handler = connect(
       function (req, res, next) {
         emitter.emit('request', {method: req.method, url: req.url })
         next()
@@ -116,11 +116,11 @@ if(!module.parent) {
   loadDB(config, function (err, db) {
 
     var app = createApp(db)
-    http.createServer(app.handler).listen(config.port, function () {
+    app.handler.listen(config.port, function () {
       app.emitter.emit('listening',
         {app:'balancer', port: config.port, env: config.env })
     })
-    http.createServer(app.adminHandler).listen(config.adminPort, function () {
+    app.adminHandler.listen(config.adminPort, function () {
       app.emitter.emit('admin_listening',
         {app:'admin', port: config.adminPort })
     })

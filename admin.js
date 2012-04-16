@@ -5,6 +5,7 @@ var pipes = require('mw-pipes')
   , runner = require('./runner')
   , u = require('ubelt')
   , util = require('./util')
+  , connect = require('connect')
   ;
 
 var pre = util.pre
@@ -57,7 +58,7 @@ function tail (res, app, which) {
   return outs.length == 0
 }
 
-return pipes(
+return connect(
     function (req, res, next) {
       var p = util.urlQuery(req.url)
       req.url = p.url
